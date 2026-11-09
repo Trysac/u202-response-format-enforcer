@@ -4,20 +4,16 @@
 
 | Tool | Why |
 |---|---|
-| Python >= 3.10 | Widest supported range that still allows modern typing syntax. |
-| uv | Fast, reproducible environments and builds on Windows and Linux. |
-| hatchling | Simple, standards-based build backend; no setup.py. |
-| ruff | Lint and format in one fast tool. |
-| mypy (strict) | Catches type errors before release; the package ships `py.typed`. |
-| pytest + pytest-cov | De facto standard test runner with branch coverage. |
-| gitleaks | Secret scanning locally and in CI. |
-| GitHub Actions + Dependabot | Thin CI wrapper over the local gates; weekly dependency updates. |
+| Python >= 3.10 | The code uses PEP 604 unions, built-in generics, `dataclasses`, `typing.Protocol`, `typing.TypedDict` and `zip(strict=False)`. |
+| `csv` | Parses CSV with the standard library default dialect. |
+| `re` | Validates full-match regex formats and typed CSV cells. |
+| `sqlite3` | Compiles SQL statements with `EXPLAIN` on a private `:memory:` connection and enforces a read-only authorizer. |
+| `pytest` | The test module `tests/test_response_format_enforcer.py` uses pytest-style tests and `pytest.raises`. |
 
 ## Discarded
 
 | Tool | Why not |
 |---|---|
-| Poetry | Slower, and uv covers the same needs with standard dependency groups. |
-| black + isort + flake8 | Replaced by ruff: one tool instead of three. |
-| tox / nox | The OS matrix lives in CI; locally a single `scripts/check.py` is enough. |
-| Shell scripts for gates | Not portable to Windows; the gates are a stdlib Python script. |
+| JSON and YAML validators | Out of scope: JSON has mature validators and YAML would need a parser dependency. |
+| Non-SQLite SQL dialects | `SqlFormat` is built on `sqlite3`; other dialects are out of scope. |
+| Executing SQL | Validation uses `EXPLAIN` only and never executes the statement. |
