@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added response_format_enforcer: validate LLM replies as CSV, SQL (read-only), or regex, and enforce format with a bounded re-ask loop.
 - Initial project structure from the factory utility template.

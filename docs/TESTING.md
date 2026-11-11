@@ -3,27 +3,17 @@
 ## Running
 
 ```sh
-uv run pytest --cov=response_format_enforcer   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
+python -m pytest tests/test_response_format_enforcer.py
 ```
 
 ## Policy
 
-- Branch coverage of `src/response_format_enforcer` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import response_format_enforcer`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
+The tests are plain pytest tests in `tests/test_response_format_enforcer.py`. They import the public package (`CsvFormat`, `SqlFormat`, `RegexFormat`, `validate`, `enforce`, `FormatError`, `Issue`, `Message`, `RecordedLLM`, `RecordingExhaustedError`, `FakeLLM`) and assert returned `Issue` lists, raised `FormatError` codes, and re-ask behavior. The test module uses local objects only; no network calls or external services are present.
 
 ## Tiers
 
-- Local tier (every gate run, coverage measured here): unit and property tests, plus conformance on small
-  fixtures kept in the repository.
-- CI tier: conformance that needs an external tool or a download. Mark them `@pytest.mark.conformance`; `scripts/check.py` deselects them locally
-  (unless `FABRICA_CI=1`). The CI `conformance` job sets `FABRICA_CI=1` and runs the full suite. Tools are installed
-  by the optional `ci/conformance-setup.sh` (bash, CI only; verify every download against a pinned SHA-256), and
-  tagged tests skip cleanly when their tool is missing.
+There is one test file, `tests/test_response_format_enforcer.py`, run locally. No separate conformance tier or marker-based selection is present in the provided test source.
 
 ## Layout
 
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+`tests/test_response_format_enforcer.py` contains `TestCsvFormat`, `TestSqlFormat` and the other pytest classes in that module. The CSV tests cover construction validation, empty input, correct and wrong headers, invalid cell types, non-ASCII digits for `int`, full-width digits for `date`, wrong cell counts, fenced content, quoted cells with commas, `max_rows`, the 20-issue limit, `max_chars` above and at the limit. The SQL tests cover valid construction, invalid DDL, `SELECT` on an existing table, `WITH` queries, and missing tables. The same module imports the regex, enforcement and LLM-double names listed above for their public API tests.
